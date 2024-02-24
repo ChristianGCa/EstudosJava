@@ -35,7 +35,5 @@ public class WrapperClass {
         
         Integer i = 73;
         System.out.println(i.toBinaryString(i));
-        
-    
     }
 }
