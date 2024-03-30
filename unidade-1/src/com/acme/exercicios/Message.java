@@ -1,9 +1,10 @@
 package com.acme.exercicios;
 
 public class Message<T> {
-    
-    // Atributes
+
+    // Atributo
     private Head head;
     private Body<T> body;
+    
     
 }

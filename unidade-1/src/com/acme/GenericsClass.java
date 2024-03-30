@@ -1,4 +1,3 @@
-
 package com.acme;
 
 import java.util.ArrayList;
@@ -6,39 +5,36 @@ import java.util.ArrayList;
 public class GenericsClass {
 
     public static void main(String[] args) {
-        
+
         int[] notas1 = new int[100];
         
         ArrayList<Integer> notas2 = new ArrayList();
         
-        notas2.add(60);
-        notas2.add(12);
-        notas2.add(56);
+        notas2.add( 60 );
+        notas2.add( 12 );
+        notas2.add( 56 );
         
         float m = calcularNotaMedia(notas2);
-        System.out.println("Média -> " + m);
+        System.out.println("Média -> "+m);
         
         Grupo<Integer> g = new Grupo();
-        //g.add("Ijuí");
+        //g.add("Ijui");
         g.add(34);
-        //g.add(notas2);
+        //g.add( notas2 );
         
         Grupo<String> g2 = new Grupo();
-        g2.add("Ijuí");
+        g2.add("Ijui");
+        
+        
         
     }
     
-    
-    // Só recebe notas do tipo inteiro
     public static float calcularNotaMedia(ArrayList<Integer> notas) {
-        float total = 0f;        
-        for (Integer n : notas) {
-        
-            // Haverá unboxing
+        float total = 0f;
+        for (Integer n : notas ) {
             total = total + n;
         }
-        return (total / notas.size());
-    
+        return ( total / notas.size() );
     }
     
 }

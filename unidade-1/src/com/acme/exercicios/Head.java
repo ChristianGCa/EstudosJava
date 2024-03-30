@@ -1,16 +1,17 @@
 package com.acme.exercicios;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class Head {
-    
-    // Atributes
+
+    // Atributos
     private UUID id;
     private int priority;
     private String type;
-    private Boolean creationDate;
+    private Date creationDate;
     
-    // Operations
+    // Operações
 
     public UUID getId() {
         return id;
@@ -36,12 +37,14 @@ public class Head {
         this.type = type;
     }
 
-    public Boolean getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Boolean creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
+    
+    
     
 }

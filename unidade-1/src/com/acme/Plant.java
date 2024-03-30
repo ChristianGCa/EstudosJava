@@ -1,13 +1,17 @@
 package com.acme;
 
 public class Plant {
+    
+    // Atributos
     private String name;
     private String especie;
     private String descricao;
-    private Season estacao;
     
-    // Métodos
-
+    private Season estacao;
+            
+    
+    // Operacoes
+    
     public String getName() {
         return name;
     }
@@ -40,5 +44,5 @@ public class Plant {
         this.estacao = estacao;
     }
     
-
+    
 }

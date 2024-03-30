@@ -1,8 +1,7 @@
 package com.acme;
 
 public enum Season {
-    
-    SUMMER, FALL, WINTER, SPRING
-    
+
+    SUMMER, FALL, WINTER, SPRING;
     
 }

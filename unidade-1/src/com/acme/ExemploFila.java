@@ -1,15 +1,16 @@
 package com.acme;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class ExemploFila {
 
     public static void main(String[] args) {
+
+        Queue<String> queue = new LinkedList();
         
-        Queue<String> queue = (Queue<String>) new ArrayList();
-        
-        queue.offer("Ijuí");
+        queue.offer("Ijui");
         queue.offer("Porto Alegre");
         queue.offer("Panambi");
         
@@ -19,6 +20,8 @@ public class ExemploFila {
         System.out.println(v);
         
         System.out.println(queue);
+        
+        
     }
     
 }

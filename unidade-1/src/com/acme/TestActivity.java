@@ -4,6 +4,11 @@ public class TestActivity {
 
     public static void main(String[] args) {
 
+        
+        Activity x = new Activity();
+        x.setName("replic");
+        
+        
         Activity act = new Activity("register");
         System.out.println( "id -> "+act.getId() );
         act.setPriority(Activity.Priority.HIGHEST);

@@ -7,7 +7,6 @@ public class Activity {
 
     // Atributes
     private UUID id;
-    // acesso por pacote e por herança
     protected String name;
     private Date executionDate;
     private Priority priority;
@@ -22,7 +21,7 @@ public class Activity {
         this.id = UUID.randomUUID();
     }
     
-    public Activity(String name) {
+    public Activity(String name) throws ActivityException {
         this();
         this.setName(name);        
     }
@@ -37,9 +36,12 @@ public class Activity {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name) throws ActivityException {
         if (name.length() >= 4 && name.length() <= 8) {
             this.name = name;
+        }else {
+            ActivityException ex = new ActivityException("Falha ao criar a atividade. Nome fora do limite de caracteres!");
+            throw ex;
         }
     }
 
