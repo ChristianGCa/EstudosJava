@@ -9,9 +9,9 @@ public class TextAccess {
 
     public static void main(String[] args) {
         
-        
-        
-        
+        // Chama o método readTextFile para ler o conteúdo de um arquivo de texto e imprime o conteúdo
+        String text = readTextFile("/home/christian/mydata/mydata.ser");
+        System.out.println("text");
     }
     
     //Método genérico
@@ -23,14 +23,15 @@ public class TextAccess {
             // ESTUDAR ESSAS CLASSSES //
             ////////////////////////////
             
-            //Acessa e le o arquivo
+            // Acessa e lê o arquivo
             File f = new File(fileName);
             FileReader fr = new FileReader(f);
             BufferedReader buffer = new BufferedReader(fr);
             StringBuilder text = new StringBuilder();
             String line = "";
             
-            //Se é diferente de null, é porque ainda tem linhas pra ler
+            // Cada linha lida é adicionada a um objeto StringBuilder para formar o texto completo.
+            // Se é diferente de null, é porque ainda tem linhas pra ler
             while( (line = buffer.readLine()) != null ) {
                 text.append(line);
                 text.append("\n");
