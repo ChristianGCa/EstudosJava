@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class Start {
 
-    private static final int NUMBER_OF_MESSAGES = 5;
+    private static final int NUMBER_OF_MESSAGES = 100;
 
     public static void main(String[] args) throws UnknownHostException {
 
@@ -24,7 +24,7 @@ public class Start {
         MessageManagerDB.store(list);
 
         // Lista mensagens com a prioridade informada.
-        MessageManagerDB.printMessages(Message.Priority.HIGH);
+        MessageManagerDB.printMessages(Message.Priority.NORMAL);
 
     }
 

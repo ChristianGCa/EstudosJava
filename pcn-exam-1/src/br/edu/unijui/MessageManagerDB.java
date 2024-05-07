@@ -7,7 +7,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
 import java.util.List;
 
 /**
@@ -17,6 +16,10 @@ import java.util.List;
  */
 public class MessageManagerDB {
 
+    private static final String URL_DB = "jdbc:derby://localhost:1527/sample";
+    private static final String USERNAME = "app";
+    private static final String PASSWORD = "app";
+
     /**
      * Stores every message in the list of generated messages;
      *
@@ -25,60 +28,39 @@ public class MessageManagerDB {
     public static void store(List<Message> messageList) {
 
         Connection con = getConnection();
-        
-        // Insira aqui seu código para armazenar todas as mensagens no banco de dados.
-        // Lembre-se de criar (abrir e fechar) uma transação para isso.
-        // Lembre-se que é preciso usar blocos try-catch.
-        
         PreparedStatement pstmt = null;
-        
 
         try {
 
-            String SQL = """
-                         INSERT INTO MESSAGES (ID,
-                                               PRIORITY,
-                                               CREATION_DATE,
-                                               EXPIRATION_DATE,
-                                               CONTENT)
-                         VALUES(?,?,?,?,?)
-                         """;
-
+            String SQL = "INSERT INTO MESSAGES VALUES (?,?,?,?,?)";
             pstmt = con.prepareStatement(SQL);
             con.setAutoCommit(false);
 
-            // Para cada mensagem na lista de mensagens messageList
             for (Message msg : messageList) {
-
                 pstmt.setString(1, msg.getId().toString());
                 pstmt.setInt(2, msg.getPriority().ordinal());
-                java.util.Date dataCreateUtil = msg.getCreationDate();
-                java.sql.Date dataCreateSql = new java.sql.Date(dataCreateUtil.getTime());
-                pstmt.setDate(3, dataCreateSql);
-                java.util.Date dataExpirationUtil = msg.getExpirationDate();
-                java.sql.Date dataExpirationSql = new java.sql.Date(dataExpirationUtil.getTime());
-                pstmt.setDate(4, dataExpirationSql);
+                pstmt.setDate(3, new java.sql.Date(msg.getCreationDate().getTime()));
+                pstmt.setDate(4, new java.sql.Date(msg.getExpirationDate().getTime()));
                 pstmt.setString(5, msg.getContent());
-                pstmt.execute();
+                pstmt.addBatch();
             }
-            
+
+            pstmt.executeBatch();
             con.commit();
+
+        } catch (SQLException ex) {
             
-
-        } catch (SQLException ex1) {
-
+            System.out.println("Erro ao inserir dados no banco de dados: " + ex.getMessage());
+            
             try {
-                con.rollback();
-            } catch (SQLException ex2) {
-                System.out.println("Erro ao tentar fazer rollback: " + ex2.getMessage());
+                if (con != null) {
+                    con.rollback();
+                }
+            } catch (SQLException e) {
+                System.out.println("Erro ao fazer rollback: " + e.getMessage());
             }
-
-            System.out.println("Erro ao inserir dados no banco de dados: " + ex1.getMessage());
-
         } finally {
-            
             try {
-                
                 if (pstmt != null) {
                     pstmt.close();
                 }
@@ -86,7 +68,7 @@ public class MessageManagerDB {
                     con.close();
                 }
             } catch (SQLException ex) {
-                System.out.println("Erro ao fechar conexão com o banco de dados: " + ex.getMessage());
+                System.out.println("Erro ao fechar conexão ou prepared statement: " + ex.getMessage());
             }
         }
     }
@@ -100,22 +82,16 @@ public class MessageManagerDB {
 
         Connection con = getConnection();
 
-        // Insira aqui seu código para consultar e imprimir na tela todos os dados das mensagens recuperadas do banco de dados, de acordo com a prioridade informada.
-        // Lembre-se que é preciso usar blocos try-catch.
         try {
-
-            Statement stmt = con.createStatement();
-
-            String SQL = "SELECT * FROM APP.MESSAGES WHERE PRIORITY = " + priority.ordinal();
             
-            // Armazena o conteudo consultado do banco de dados
+            String SQL = "SELECT * FROM APP.MESSAGES WHERE PRIORITY = " + priority.ordinal();
+            Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
 
-            // Se o próximo elemento existir, prossiga
             if (rs.next()) {
-                
-                System.out.println("\nMENSAGENS COM A PRIORIDADE "+priority+"\n");
-            
+
+                System.out.println("\nMENSAGENS COM A PRIORIDADE " + priority + "\n");
+
                 do {
                     System.out.println("ID: " + rs.getString("ID"));
                     System.out.println("Prioridade: " + Priority.values()[rs.getInt("PRIORITY")]);
@@ -125,20 +101,22 @@ public class MessageManagerDB {
                     System.out.println();
 
                 } while (rs.next());
-                
-            } else {
-                
-                System.out.println("Não há registros com a prioridade "+priority);
-            }
 
-            rs.close();
-            stmt.close();
-            con.close();
+            } else {
+
+                System.out.println("Não há registros com a prioridade " + priority);
+            }
 
         } catch (SQLException ex) {
             System.out.println("Erro ao exibir as mensagens: " + ex.getMessage());
-        } catch (NullPointerException ex) {
-            System.out.println("Falha de conexão. "+ex.getMessage());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println("Erro ao fechar conexão com o banco de dados: " + ex.getMessage());
+            }
         }
     }
 
@@ -149,12 +127,10 @@ public class MessageManagerDB {
      */
     private static Connection getConnection() {
 
-        // Insira aqui o código necessário para abrir uma conexão com o banco de dados.
-        // Lembre-se de que o método deve retornar essa conexão.
         Connection c = null;
 
         try {
-            c = DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app");
+            c = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD);
             if (c != null) {
                 System.out.println("Conexão efetuada!");
                 return c;
@@ -162,11 +138,9 @@ public class MessageManagerDB {
 
         } catch (SQLException ex) {
             System.out.println("Erro ao conectar ao banco de dados: " + ex.getMessage());
-        } catch (NullPointerException ex) {
-            System.out.println("Falha de conexão. "+ex.getMessage());
         }
-        // <- Remova essa linha e substitua pelo retorno correto.
-        return null;
+
+        return c;
     }
 
 }
