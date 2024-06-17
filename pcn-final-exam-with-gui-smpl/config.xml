@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+   
+    <database user = "app" 
+              password = "app"
+              host-name = "localhost" 
+              port = "1527" 
+              instance = "sample" 
+    />
+    
+</config>
+
+
+
