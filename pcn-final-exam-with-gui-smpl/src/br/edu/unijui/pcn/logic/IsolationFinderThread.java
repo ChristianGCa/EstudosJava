@@ -8,24 +8,27 @@ import java.io.IOException;
  * Esta classe implementa uma thread para localizar indices de isolamento
  * social.
  *
- * @author <seu nome aqui>
+ * @author Christian Gabriel Candeloni
  */
 public class IsolationFinderThread extends Thread {
 
     private final String FILE_NAME;
-    private String linhaMaiorIsolamento;
-    private String linhaMenorIsolamento;
-    private String estadoSelecionado;
+    private String linhaIsolamento;
+    private final String estadoSelecionado;
+    private final boolean buscarMaior;
 
-    public IsolationFinderThread(String fileName, String estadoSelecionado) {
+    /**
+     * @param buscarMaior Indica a thread se deve buscar o maior índice (true) ou o menor (false)
+     */
+    public IsolationFinderThread(String fileName, String estadoSelecionado, boolean buscarMaior) {
         this.FILE_NAME = fileName;
-        // removendo a uf dos estado selecionado
+        this.buscarMaior = buscarMaior;
         this.estadoSelecionado = estadoSelecionado;
     }
 
     @Override
     public void run() {
-        // Implemente aqui seu código
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME));
             String line;
@@ -34,19 +37,22 @@ public class IsolationFinderThread extends Thread {
 
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                
-                if (estadoSelecionado.equals("Brazil") | data[0].equalsIgnoreCase(estadoSelecionado.substring(0, estadoSelecionado.length()-5))) {
+
+                if (estadoSelecionado.equals("Brazil") | data[0].equalsIgnoreCase(estadoSelecionado.substring(0, estadoSelecionado.length() - 5))) {
 
                     double currentIndex = Double.parseDouble(data[2]);
+                    if (buscarMaior == true) {
 
-                    if (currentIndex > highestIndex) {
-                        highestIndex = currentIndex;
-                        linhaMaiorIsolamento = line;
-                    }
+                        if (currentIndex > highestIndex) {
+                            highestIndex = currentIndex;
+                            linhaIsolamento = line;
+                        }
+                    } else {
 
-                    if (currentIndex < lowestIndex) {
-                        lowestIndex = currentIndex;
-                        linhaMenorIsolamento = line;
+                        if (currentIndex < lowestIndex) {
+                            lowestIndex = currentIndex;
+                            linhaIsolamento = line;
+                        }
                     }
                 }
             }
@@ -55,12 +61,7 @@ public class IsolationFinderThread extends Thread {
         }
     }
 
-    public String getHighestIsolationLine() {
-        return linhaMaiorIsolamento;
+    public String getIsolationLine() {
+        return linhaIsolamento;
     }
-
-    public String getLowestIsolationLine() {
-        return linhaMenorIsolamento;
-    }
-
 }

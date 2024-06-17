@@ -2,19 +2,14 @@ package br.edu.unijui.gui;
 
 import br.edu.unijui.pcn.logic.DBManager;
 import br.edu.unijui.pcn.logic.IsolationFinderThread;
+import br.edu.unijui.pcn.logic.XMLTransformer;
 import br.edu.unijui.pcn.utils.XMLHandler;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * Interface implementada parcialmente pelo professor. Siga as instruções da
@@ -476,14 +471,13 @@ public class MainFrame extends javax.swing.JFrame {
         Document doc = XMLHandler.readXmlFile(CONFIG_FILE_NAME);
 
         try {
-            // Utilizar o método getXMLValue para obter os valores
+
             String host = XMLHandler.getXMLValue(doc, "//config/database/@host-name");
             String usuario = XMLHandler.getXMLValue(doc, "//config/database/@user");
             String senha = XMLHandler.getXMLValue(doc, "//config/database/@password");
             String instancia = XMLHandler.getXMLValue(doc, "//config/database/@instance");
             String porta = XMLHandler.getXMLValue(doc, "//config/database/@port");
 
-            // Configurar os valores nos campos de texto
             hostName.setText(host);
             username.setText(usuario);
             pass.setText(senha);
@@ -503,26 +497,18 @@ public class MainFrame extends javax.swing.JFrame {
 
         final String CSV_FILE_NAME = selectedFile.getName(); // Essa variável contém o nome do arquivo selecionado 
 
-        // conecta ao banco de dados
         DBManager dbManager = new DBManager(hostName.getText(), Integer.parseInt(port.getText()), instance.getText(), username.getText(), pass.getText());
 
-        // armazena no banco de dados
         dbManager.store(CSV_FILE_NAME);
 
-        // obtém o número de registros totais da tabela SOCIAL_ISOLATION
         Integer totalRegistros = dbManager.getTotal();
         totalRegisters.setText(totalRegistros.toString());
 
-        // obtém o número de estados únicos da tabela STATE
         Integer totalEstadosUnicos = dbManager.getNumberOfStates();
         numberStates.setText(totalEstadosUnicos.toString());
 
-        // obtem o número de cidades únicas
         Integer numeroCidadesUnicas = dbManager.getNumberOfCities();
         numberCities.setText(numeroCidadesUnicas.toString());
-
-        String p = port.getText();
-
 
     }//GEN-LAST:event_jbRunSystemActionPerformed
 
@@ -539,25 +525,25 @@ public class MainFrame extends javax.swing.JFrame {
         final String CSV_FILE_NAME = selectedFile.getName(); // Essa variável contém o nome do arquivo selecionado 
         final String WHERE_TO_FIND = jcbWhereToFind.getSelectedItem().toString(); // Essa variável contém o nome e a sigla do estado selecionado
 
-        // Siga aqui seu código
-        IsolationFinderThread thread1 = new IsolationFinderThread(CSV_FILE_NAME, WHERE_TO_FIND);
-        IsolationFinderThread thread2 = new IsolationFinderThread(CSV_FILE_NAME, WHERE_TO_FIND);
+        IsolationFinderThread threadMaior = new IsolationFinderThread(CSV_FILE_NAME, WHERE_TO_FIND, true);
+        IsolationFinderThread threadMenor = new IsolationFinderThread(CSV_FILE_NAME, WHERE_TO_FIND, false);
 
-        thread1.start(); // Inicia a thread para encontrar o maior índice
-        thread2.start(); // Inicia a thread para encontrar o menor índice
+        threadMaior.start();
+        threadMenor.start();
 
         // Aguarda a conclusão das threads
         try {
-            thread1.join();
-            thread2.join();
+            threadMaior.join();
+            threadMenor.join();
             
-            // Obtém as linhas com os resultados
-            String linhaCidadeMaiorIsolamento = thread1.getHighestIsolationLine();
-            String linhaCidadeMenorIsolamento = thread2.getLowestIsolationLine();
+            // Salva as linhas com os resultados
+            String linhaCidadeMaiorIsolamento = threadMaior.getIsolationLine();
+            String linhaCidadeMenorIsolamento = threadMenor.getIsolationLine();
 
             String[] maiorIsolamento = linhaCidadeMaiorIsolamento.split(",");
             String[] menorIsolamento = linhaCidadeMenorIsolamento.split(",");
             
+            // Converte o índice para percentual
             BigDecimal maiorPercentual = new BigDecimal(Double.parseDouble(maiorIsolamento[2])*100).setScale(2, RoundingMode.HALF_UP);
             BigDecimal menorPercentual = new BigDecimal(Double.parseDouble(menorIsolamento[2])*100).setScale(2, RoundingMode.HALF_UP);
 
@@ -585,8 +571,16 @@ public class MainFrame extends javax.swing.JFrame {
         final String CSV_FILE_NAME = selectedFile.getName();      // Essa variável contém o nome do arquivo selecionado
         final String XML_FILE_NAME = xmlOutputFileName.getText(); // Essa variável contém o nome do arquivo ao qual deve ser exportado o XML
 
-        // Siga aqui seu código
+        
+        DBManager dbManager = new DBManager(hostName.getText(), Integer.parseInt(port.getText()), instance.getText(), username.getText(), pass.getText());
+        
+        XMLTransformer xmlTransformer = new XMLTransformer(dbManager);
 
+        xmlTransformer.export(XML_FILE_NAME);
+        
+        dbManager.closeConnection();
+        System.out.println("Dados exportados com sucesso!");
+ 
     }//GEN-LAST:event_jbExportActionPerformed
 
     private void totalRegistersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_totalRegistersActionPerformed

@@ -18,11 +18,11 @@ public class DBManager {
     // Atributos
     private Connection connection;
 
-    private String serverName;
-    private int portNumber;
-    private String dbName;
-    private String user;
-    private String password;
+    private final String serverName;
+    private final int portNumber;
+    private final String dbName;
+    private final String user;
+    private final String password;
 
     // Construtor
     public DBManager(String serverName, int portNumber, String dbName, String user, String password) {
@@ -43,7 +43,7 @@ public class DBManager {
         }
     }
 
-    private void closeConnection() {
+    public void closeConnection() {
         try {
             connection.close();
         } catch (SQLException ex) {
@@ -168,18 +168,20 @@ public class DBManager {
      */
     public ResultSet load() {
         openConnection();
-
-        // Siga aqui a implementação
+        
         try {
 
-            return null; // modifique esse retorno
+            String query = """
+                           SELECT SI.ID, SI.CITY, S.NAME AS nome_estado, S.ACRONYM AS uf_estado, SI.DATE_WHEN, SI.INDEX 
+                           FROM SOCIAL_ISOLATION SI JOIN STATE S ON SI.STATE_ID = S.ID ORDER BY CITY
+                           """;
+            Statement stmt = connection.createStatement();
+            return stmt.executeQuery(query);
+
         } catch (Exception ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.WARNING, null, ex);
             return null;
-        } finally {
-            closeConnection();
         }
-
     }
 
     /**
@@ -244,7 +246,7 @@ public class DBManager {
 
         openConnection();
         int total = 0;
-        String query = "SELECT COUNT(*) AS total FROM STATE";
+        String query = "SELECT COUNT(DISTINCT NAME) AS total FROM STATE";
 
         try {
             Statement stmt = connection.createStatement();
