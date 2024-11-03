@@ -14,11 +14,11 @@ import javafx.stage.Stage;
  *
  * @author christian
  */
-public class ExemploJavaFX extends Application {
+public class MainTextField extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("FXMLTextField.fxml"));
         
         Scene scene = new Scene(root);
         
