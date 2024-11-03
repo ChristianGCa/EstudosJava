@@ -26,7 +26,7 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     private void handleButtonAction(ActionEvent event) {
-        System.out.println("Você clicou no botãoã");
+        System.out.println("Você clicou no botão");
         label.setText("Olá "+txtNome.getText()+"!");
     }
     
